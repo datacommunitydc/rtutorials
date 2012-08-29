@@ -4,10 +4,10 @@ Monthly Sales Chart
 An example in R and Python/d3.js
 -------------------------------------
 
-A particularly favorite question of the ze suits is 'Where are we relative to last month?' An interesting metric companies use is month over month sales report. We are we compared to last month or last year. Now with some industries month's end is an arbitrary segmentation, in that case a trailing 30/60/90 makes more sense, but if it makes sense this type of chart can be useful.
+A particularly favorite question of the ze suits is 'Where are we relative to last month?' An interesting metric companies use is month over month sales report. We are we compared to last month or last year. Now with some industries month's end is an arbitrary segmentation, in that case a trailing 30/60/90 days makes more sense, but if this makes sense this type of chart can be useful.
 
-We are going to first review two purely R/ggplot way of generating this graph and then a different using the python library Pandas and the JavaScript d3.js. I hope this is a useful comparison of the languages.
-
+In Part One, We are going to first review two purely R/ggplot way of generating this data and then in Part 2 we are going to use the python library Pandas and the excellent JavaScript d3.js library. I hope this is a useful comparison of the languages.
+s
 
 First lets look at the data. These can be any date stamped transaction you are interested comparing across months. First lets load the data, avoiding the mess of factors
 
@@ -354,7 +354,7 @@ out
 
 
 
-First we passed the dataframe we care about. We specified the variable that we wished to split on('month' in out case). The last three parameters are a little convoluted. What we are doing is passing the summarise function to apply to each subset. The summarise function allows us to create a new dataframe. The other standard option, 'transform', changes the existing dataframe nd would work just as well. Finally we are specifying what summaries we what, same as above we are asking for the monthly cummulative summation and just the identity of the day of month.
+First we passed the dataframe we care about. We specified the variable that we wished to split on('month' in out case). The last three parameters are a little convoluted. What we are doing is passing the summarise function to apply to each subset. The summarise function allows us to create a new dataframe. The other standard option, 'transform', changes the existing dataframe nd would work just as well. Finally we are specifying what summaries we what, same as above we are asking for the monthly cumulative summation and just the identity of the day of month.
 
 Now that we have the data formatted we can jump into the other crown jewel in Hadley's tool-belt ggplot. ggplot2 has the wonderfully useful geom_step, which is just what we want.
 
@@ -375,7 +375,7 @@ print(p)
 ![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
 
 
-Again this short intro, should not be considered a full ggplot walkthrough.  The main idea behind ggplot it the create a level of abstraction from plotting where you describe the plot to ggplot. Here we fist mapping the varibales of the dataframe to the chart using the aes() aesthetic parameter to the ggplot command. Then we are adding a geom to describe how we want to display this data. Here we use the step geom.
+Again this short intro, should not be considered a full ggplot walk through.  The main idea behind ggplot it the create a level of abstraction from plotting where you describe the plot to ggplot. Here we fist mapping the variables of the dataframe to the chart using the aes() aesthetic parameter to the ggplot command. Then we are adding a geom to describe how we want to display this data. Here we use the step geom.
 
 
 
