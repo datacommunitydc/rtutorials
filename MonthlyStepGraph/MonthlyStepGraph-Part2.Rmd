@@ -1,0 +1,13 @@
+
+Pythonic Philharmonic of Pandas
+---------------------------
+This Completes the R postion of the walkthrough. Now we are going to replicate the entire exercise in python and javascript. Here I am gonig to use a great package that has been making a big splash in the scientific python community. Based on the R data.frame, it is focused on tabular data. 
+
+
+```{r test-python, engine='python'}
+from pandas import *
+df = read_csv("/home/john/rtutorials/MonthlyStepGraph/data.txt", names = ['dates'])
+df1 = df.groupby('dates').count()
+df2 = df1.asfreq('D').fillna(value = 0) 
+print(df.head())
+```

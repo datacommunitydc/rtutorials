@@ -1,0 +1,80 @@
+Monthly Sales Chart
+========================================================
+
+An example in R and Python/d3.js
+-------------------------------------
+
+A particularly favorite question of the ze suits is 'Where are we relative to last month?' An interesting metric companies use is month over month sales report. We are we compared to last month or last year. Now with some industries month's end is an arbitrary segmentation, in that case a trailing 30/60/90 days makes more sense, but if this makes sense this type of chart can be useful.
+
+In Part One, We are going to first review two purely R/ggplot way of generating this data and then in Part 2 we aer going to use the python library Pandas and the JavaScript d3.js. I hope this is a useful comparison of the languages.
+s
+
+First lets look at the data. These can be any date stamped transaction you are interested comparing across months. First lets load the data, avoiding the mess of factors
+```{r test-r, engine='R'}
+RawData <- read.table( file="~/rtutorials/MonthlyStepGraph/data.txt",stringsAsFactors=FALSE, header=TRUE) #load from flat file, do not create factors
+head(RawData) #get the first five row
+dim(RawData) #get the dimentions
+```
+So all we have is a long list of dates, say these are sales or signups. We can get a simple count of frequency with the table() function.
+
+```{r , engine='R'}
+counts <- as.data.frame(table(RawData)) # get counts by date, then back to a data.frame
+head(counts)
+```
+From here we can extract the date info we need to plot a chart.
+
+```{r , engine='R'}
+counts['month'] <- format.Date(counts[,1],  "%m-%Y")
+counts['day'] <- as.integer(format.Date(counts[,1],  "%d"))
+head(counts)
+```
+What we want is the cumulative sum of the transactions for each months. First I will present the base approach to this, which is a common and useful pattern in R.
+
+```{r , engine='R'}
+month.list <- unique(counts$month) #Get a vector of the groups you care about
+month.list
+#create a simple function that will calculate what you want for each group (the cumulative sum for each month in our case)
+cumSumByMonth<-function(month) {
+  data.frame(name = month,
+             day = counts[which(counts$month ==month),4], 
+             cumsum = cumsum(counts[which(counts$month ==month),2]))
+             }
+#lappy will a function over a list. So here we transform the month.list object and apply our custom cumSum function
+out<-lapply(X = as.list(month.list), FUN = cumSumByMonth)
+#Remember that our function is returning a data.frame so waht we have after the lapply is a list of data frames, one entry for each group
+str(out)
+#We can use the do.call("rbind", X) to zip them all back into a data frame. Now we have a single data dataframe that has cummulative sum for each month.
+out <- do.call("rbind", out)
+out
+```
+
+While the lapply() do.call() combo is a useful pattern, there is a wonderful tool that Haldey Wickam built that help with this kind of transformations called the plyr package. While I will not spend too long breaking down the entire library, I'll talk briefly. If you are doing data analysis in R you should get familiar with the plyr package.
+
+Wickham calls it **The Split-Apply-Combine Strategy for Data Analysis.** Here is the actual paper by that [name](http://www.jstatsoft.org/v40/i01/). The idea is to split up the data by some criteria, apply a transformation on that group and the put it all back together. Below is the same operation as above but in one line.
+
+```{r , engine='R'}
+library(plyr)
+out<-ddply(counts, .(month) ,summarise, day = day, cumsum =  cumsum(Freq))
+out
+```
+First we passed the dataframe we care about. We specified the variable that we wished to split on('month' in out case). The last three parameters are a little convoluted. What we are doing is passing the summarise function to apply to each subset. The summarise function allows us to create a new dataframe. The other standard option, 'transform', changes the existing dataframe nd would work just as well. Finally we are specifying what summaries we what, same as above we are asking for the monthly cummulative summation and just the identity of the day of month.
+
+Now that we have the data formatted we can jump into the other crown jewel in Hadley's tool-belt ggplot. ggplot2 has the wonderfully useful geom_step, which is just what we want.
+```{r fig.width=10, fig.height=8}
+library(ggplot2)
+
+p = ggplot(aes(x = day, y= cumsum, color = month),data = out)
+
+chart_title<- paste("Where the F' are we chart for ",format(Sys.time(), "%a %b %d %Y"), sep ='')
+p = p + geom_step() + opts(title = chart_title) +
+       scale_x_continuous('Day of the Month') +
+       scale_y_continuous('Count of whatever you care about');
+
+print(p)
+```
+
+Again this short intro, should not be considered a full ggplot walkthrough.  The main idea behind ggplot it the create a level of abstraction from plotting where you describe the plot to ggplot. Here we fist mapping the varibales of the dataframe to the chart using the aes() aesthetic parameter to the ggplot command. Then we are adding a geom to describe how we want to display this data. Here we use the step geom.
+
+
+
+
