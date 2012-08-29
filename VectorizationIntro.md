@@ -56,7 +56,7 @@ print(out)
 
 In the words of the Bruno, nish-nish.
 
-We are actually comminting two R-sins here. non-vectorized code and growing objects. What we want is to vectorize using one of the apply-family functions 
+We are actually commiting two R-sins here: non-vectorized code and growing objects. What we want is to vectorize using one of the apply-family functions 
 
 
 ```r
@@ -95,7 +95,7 @@ $.json('http://url/', function(data){
 //do fun stuff with data
 });
 ```
-If this greek to you don't worry. Just be aware the when we call **sapply(df, mean)**. The mean that we are passing in is not an numeric object but a function. This a flavor of functional languages that is mixed into the R-soup. When we say no loops, obviously somewhere a lttle computer gnome has to loop through the data(thats how computers work right). But this looping is done in the C/FORTRAN code that underlies R and is generally faster. Now back to the **apply** function.
+If this is greek to you don't worry. Just be aware that when we call **sapply(df, mean)**. The `mean` that we are passing in is not an numeric object but a function. This a flavor of functional languages that is mixed into the R-soup. When we say no loops, obviously somewhere a lttle computer gnome has to loop through the data(thats how computers work right). But this looping is done in the C/FORTRAN code that underlies R and is generally faster. Now back to the **apply** function.
 
 The three paramaters in the apply function are:
 ```
@@ -106,7 +106,7 @@ apply(
     )
 ```
 
-Truely if there is one point that I would like you to bring home. Regardless of the spurious lies your mother and Montessori teachers told you over the years, you are not that special or smart. What ever you are doing, it likely has been done before. So if you find yourself rewriting the R-wheel, make sure you poke around before.
+Truely if there is one point that I would like you to bring home. Regardless of the spurious lies your mother and Montessori teachers told you over the years, you are not that special or smart. What ever you are doing, it likely has been done before. So if you find yourself rewriting the R-wheel, make sure you poke around first.
 
 
 
@@ -120,12 +120,9 @@ colMeans(df)
 ##  0.01494  9.99296 30.53100 
 ```
 
-
-
-
 ### So if you are thinking of a loop, don't
 
-If you are doing this kind of data manipulation regularly it is well worth your time to investigate the plyr library. Excelect resource.
+If you are doing this kind of data manipulation regularly it is well worth your time to investigate the plyr library. Excelent resource.
 
 
 ### More reading
