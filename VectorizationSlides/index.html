@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+	<!--
+	Google HTML5 slide template
+
+Authors: Luke Mah?? (code)
+Marcin Wichary (code and design)
+
+Dominic Mazzoni (browser compatibility)
+Charles Chen (ChromeVox support)
+
+URL: http://code.google.com/p/html5slides/
+	-->
+	
+<html>
+<head>
+	
+	<meta charset='utf-8'>
+	<title>Intro to Vectorization in R</title>
+  <meta name="description" content="Intro to Vectorization in R">
+  <meta name="author" content="">
+  <meta name="generator" content="slidify" />
+	
+	<!-- LOAD STYLE SHEETS -->
+	<link rel="stylesheet" href="/home/john/R/x86_64-pc-linux-gnu-library/2.15/slidify/libraries/html5slides/default/styles.css">
+	<link rel="stylesheet" href="/home/john/R/x86_64-pc-linux-gnu-library/2.15/slidify/libraries/html5slides/default/uulm.css">
+	<link rel="stylesheet" href="/home/john/R/x86_64-pc-linux-gnu-library/2.15/slidify/libraries/highlight.js/styles/github.css">
+  <!-- LOAD CUSTOM CSS -->
+  
+    
+</head>
+<body style='display: none'>
+	<section class='slides layout-regular template-regular'>
+	  <article class = "" id = "slide-1"> 
+	    <h1>Intro to Vectorization in R</h1>
+
+
+<h3>A.K.A. Do Nots USES da LOOPS</h3>
+
+<h4>Created for August 2012 DC R Users Group Meetup</h4>
+
+    </article>
+	  <article class = "" id = "slide-2"> 
+	    <h4>For me, one of the largest stumbling blocks in R was the idea of vectorization. The idea of a for loop is one of the most intuitive ideas in programing. If you program in bash or are heavy linux user it is second nature.</h4>
+
+
+<h4>In R, it is to be avoided. You do not want to explictaly call a for loop.</h4>
+
+    </article>
+	  <article class = "" id = "slide-3"> 
+	    <h4>Examples</h4>
+
+
+<pre><code>#bash
+for i in 2 4 6 8
+do
+   echo &quot;$i!!!&quot;
+done
+echo &quot;Who do we appreciate&quot;
+
+2!!!
+4!!!
+6!!!
+8!!!
+Who do we appreciate
+
+
+# R
+for (i in 1:3) {
+    print(i)
+}
+
+## [1] 1
+## [1] 2
+## [1] 3
+</code></pre>
+
+    </article>
+	  <article class = "" id = "slide-4"> 
+	    
+<p>Here is a toy example</p>
+
+<pre><code>df = data.frame(col1 = rnorm(1000), col2 = rnorm(1000, 10), col3 = rnbinom(n = 1000, 
+    size = 3, mu = 30))
+# A simple data.frame
+head(df)
+
+##     col1   col2 col3
+## 1 2.2859 10.236   53
+## 2 1.8041  9.339   17
+## 3 0.8539  9.507   60
+## 4 1.1585 10.224   18
+## 5 0.6259  9.659    6
+## 6 1.0728 10.559   18
+
+
+
+# Say we want the coloumn-wise mean of the data frame
+out &lt;- c()
+for (i in 1:dim(df)[2]) {
+    out[i] &lt;- mean(df[, i])
+    names(out)[i] &lt;- colnames(df)[i]
+}
+
+print(out)
+
+##     col1     col2     col3 
+## -0.02744  9.97594 30.01700
+</code></pre>
+
+    </article>
+	  <article class = "" id = "slide-5"> 
+	    
+<p>In the words of the Bruno, nish-nish.</p>
+
+<p>We are actually comminting two R-sins here. non-vectorized code and growing objects. What we want is to vectorize using one of the apply-family functions </p>
+
+<pre><code>apply(df, MARGIN = 2, FUN = mean)
+
+##     col1     col2     col3 
+## -0.02744  9.97594 30.01700
+</code></pre>
+
+<p>Or more simply with the user-friendly sapply variant</p>
+
+<pre><code>sapply(df, mean)
+
+##     col1     col2     col3 
+## -0.02744  9.97594 30.01700
+</code></pre>
+
+    </article>
+	  <article class = "" id = "slide-6"> 
+	    <h3>Let&#39;s look at what that just did.</h3>
+
+
+<p>&#39;apply&#39; functions are used to apply functions over arrays, matrixes or lists. In R you can pass functions as paramaters. The fancy-dancy CS term is that in R functions are first-class citizens. Get comfortable with it because it is used all over the place in R. This is akin to a call back function in async javascipt. </p>
+
+<pre><code>//example with Jquery
+$.json(&#39;http://url/&#39;, function(data){
+//do fun stuff with data
+});
+</code></pre>
+
+    </article>
+	  <article class = "" id = "slide-7"> 
+	    
+<p>If this greek to you don&#39;t worry. Just be aware the when we call <strong>sapply(df, mean)</strong>. The mean that we are passing in is not an numeric object but a function. This a flavor of functional languages that is mixed into the R-soup. When we say no loops, obviously somewhere a lttle computer gnome has to loop through the data(thats how computers work right). But this looping is done in the C/FORTRAN code that underlies R and is generally faster. Now back to the <strong>apply</strong> function.</p>
+
+<p>The three paramaters in the apply function are:</p>
+
+<pre><code>apply(
+ X = The object we are &quot;looping over&quot;
+ MARGIN = the &#39;axis&#39; we are interest in traversing (column-wise or row-wise)
+ FUN = the function we want to apply
+    )
+</code></pre>
+
+    </article>
+	  <article class = "" id = "slide-8"> 
+	    
+<p>Truely if there is one point that I would like you to bring home. Regardless of the spurious lies your mother and Montessori teachers told you over the years, you are not that special or smart. What ever you are doing, it likely has been done before. So if you find yourself rewriting the R-wheel, make sure you poke around before.</p>
+
+<pre><code># the sane way of getting column-wise means
+colMeans(df)
+
+##     col1     col2     col3 
+## -0.02744  9.97594 30.01700
+</code></pre>
+
+<p>Also the built in functions are generally vectorized and optimized. Well I say generally, but you will likely find some nasty stuff when you start poking around.  </p>
+
+    </article>
+	  <article class = "" id = "slide-9"> 
+	    <h3>So if you are thinking of a loop, don&#39;t</h3>
+
+
+<p>If you are doing this kind of data manipulation regularly it is well worth your time to investigate the plyr library. Excelect resource.</p>
+
+    </article>
+	  <article class = "" id = "slide-10"> 
+	    <h3>More reading</h3>
+
+
+<ul>
+<li><a href="http://www.burns-stat.com/pages/Tutor/R_inferno.pdf">R Inferno</a> - Highly recomend even if your not a Dante fan
+
+<ul>
+<li>Especially Ch. 3 and 4</li>
+</ul></li>
+<li><a href="https://nsaunders.wordpress.com/2010/08/20/a-brief-introduction-to-apply-in-r/">Great intro the Apply() Family</a></li>
+<li><a href="http://www.cerebralmastication.com/2009/08/a-fast-intro-to-plyr-for-r/">plyr</a> The R prophet Hadley Wickham&#39;s (peace be upon his name) excelent data manupulation package
+
+<ul>
+<li>Most reshaphing a data back flipping can be done with this great package. </li>
+</ul></li>
+</ul>
+
+    </article>
+  </section>
+</body>
+  <!-- LOAD JAVASCRIPTS  -->
+	<script src='/home/john/R/x86_64-pc-linux-gnu-library/2.15/slidify/libraries/html5slides/default/slides.js'></script>
+	<!-- LOAD MATHJAX JS -->
+  <script type="text/x-mathjax-config">
+     MathJax.Hub.Config({
+       tex2jax: {
+         inlineMath: [['$','$'], ['\\(','\\)']],
+         processEscapes: true
+       }
+     });
+  </script>
+  <script type="text/javascript"  
+src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+  <!-- DONE LOADING MATHJAX -->
+	  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="/home/john/R/x86_64-pc-linux-gnu-library/2.15/slidify/libraries/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING CSS FILES AND JS -->
+
+		
+	
+</html>
+
