@@ -1,0 +1,16 @@
+
+You need a web server to run. Or some fancy browsers will server up the content alone.
+
+git this folder. cd ./Benfords/
+Don't think you have a server? well your wrong use the power of python
+
+run:
+
+python -m SimpleHTTPServer
+
+This will start a server at localhost:8000
+
+Get an error about port in use. change port like:
+
+python -m SimpleHTTPServer 8002
+
